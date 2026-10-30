@@ -1,35 +1,46 @@
-# Validação e limites
+# Validação — O Arquivo da Água Morta
 
-## Implementado e verificado automaticamente
+Verificação em 30/10/2026. Fluxo: selecionar e examinar faixas → reorganizar → reproduzir/conferir → liberar ferrolho → abrir manualmente → inspecionar e registrar recompensas. Não há backend ou chamadas externas de áudio durante o jogo.
 
-- Rotações funcionais: duas para retos; quatro para curvas.
-- Distribuição exata de tipos e caminho do anexo preservados.
-- Cada peça inicia em orientação diferente da solução.
-- Água só atravessa portas compatíveis e para na primeira falha.
-- Nenhum percurso parcial ou ciclo isolado é aceito.
-- Conjunto completo de 16 módulos necessário para liberar a porta.
-- Unicidade comprovada de duas formas independentes.
-- Salvamento/restauração, validação de dados corrompidos, reinício.
-- Bloqueio da porta e das recompensas antes da resolução.
-- Integração dos meshes 3D com os manipuladores de clique e arraste.
-- Simulação temporal de falha, ressonância, destravamento e abertura por puxão.
-- Montagem da cena em configurações de 390 × 844 e 1366 × 768.
-- Compilação TypeScript e build Vite.
+## Testes automáticos
 
-## Prova de unicidade
+`npm test`: **18 testes passaram** (Vitest).
 
-Existem dez curvas e seis retos: `4^10 × 2^6 = 67.108.864` combinações funcionais possíveis.
+- Enumeração das 5.040 permutações: uma montagem aceita. As justificativas das relações estão no gabarito; a enumeração não substitui a análise das pistas.
+- Estados incompletos, peças duplicadas/inventadas e trocas de vizinhos rejeitados.
+- Movimentos preservam os sete fragmentos e o conteúdo fixo.
+- Preview e trecho isolado não destrancam; conferência correta destranca, mas não abre sozinha.
+- Pausa bloqueia avanço; parar e resetar cancelam a reprodução; movimento bloqueado durante leitura.
+- Porta, inspeção e coleta bloqueadas antes da abertura.
+- Persistência de montagem, descobertas, volume, mudo, porta e inventário; saves antigos, corrompidos ou com desbloqueio incompatível são ignorados/sanitizados.
+- Falha de armazenamento não derruba a partida.
+- Grafo 3D com sete faixas selecionáveis; manipulador real da porta com captura/liberação de ponteiro e recompensas ocultas até a abertura.
 
-O enumerador usa os domínios completos e poda somente orientações que necessariamente vazam na borda ou não correspondem a um vizinho já atribuído. Essa poda é exata: nenhuma solução válida pode estar em uma subárvore descartada. Ao finalizar uma atribuição sem vazamentos, o solver exige o percurso entrada → 16 módulos distintos → retorno. A busca faz 52 atribuições de orientação após a poda e encontra uma única solução.
+`npm run build`: TypeScript e Vite concluíram. Bundle principal aproximadamente 1,24 MB / 352 KB gzip, além de fontes locais e aproximadamente 650 KB de faixas de áudio. A matriz original em `assets/` não vai para `dist/`.
 
-O segundo teste não usa o enumerador nem a função de portas: gera recursivamente todas as rotas simples a partir da entrada, respeitando reta/curva e as bordas, e conta as que terminam no retorno após 16 módulos. Encontra a mesma única rota.
+## Navegador
 
-Não há gabarito ou botão de resolver na interface. O código cliente pode sempre ser inspecionado por um jogador com conhecimento técnico; este não é um jogo competitivo com validação em servidor.
+Script reproduzível: `scripts/browser-check.mjs`. Instale opcionalmente `@playwright/test@1.51.1` sem salvar dependência e Chromium (`npx playwright install chromium`); execute `node scripts/browser-check.mjs`. O script inicia seu próprio servidor local. `BROWSER_EXECUTABLE` aceita um executável já instalado; `MOBILE_ONLY=1` executa apenas a etapa móvel.
 
-## Limitação observada no teste de navegador
+Percurso desktop executado em Chromium headless com SwiftShader, 1440 × 1000:
 
-O navegador remoto carregou a aplicação, mas o Chrome deste ambiente informou que o contexto WebGL não pôde ser criado (`GL_RENDERER = Disabled`). A aplicação apresentou a mensagem de recuperação prevista para ausência de WebGL.
+- Cena WebGL realmente renderizada; capturas da cena e bancada inspecionadas visualmente.
+- Virar o suporte e levantar adesivo revelaram a anotação.
+- Montagem inicial rejeitada com feedback; pausa e retomada funcionaram.
+- Reordenação por teclado, arraste e botões levou à montagem correta.
+- Recarregamento preservou a montagem e a descoberta sob adesivo.
+- Um MP3 real tocou até o fim; legenda mudou do depoimento para o verso e terminou sem mensagem de fallback.
+- Solução em silêncio usando o avanço de faixas; ferrolho liberado e porta aberta manualmente.
+- Relatório novo, coleta, restauração de cofre aberto, inspeção da sirene e croqui; reinício removeu o progresso.
 
-Por esse motivo, não foi possível confirmar aqui a renderização visual final, o desempenho real, a experiência de toque em hardware móvel ou uma partida visual completa. Os testes da cena usam o React Three Test Renderer com contexto simulado e texturas substituídas apenas durante os testes. Eles verificam árvore de objetos, geometrias, eventos e estados; não validam pixels, shaders compilados pela GPU ou taxa de quadros.
+Etapa móvel executada separadamente em viewport 390 × 844 com emulação de toque: volume por controle de faixa, abertura da bancada, ausência de overflow horizontal, mover por botão, virar e revelar emenda. Capturas da bancada e do verso foram inspecionadas. A primeira execução com duas páginas WebGL simultâneas excedeu o timeout; o script agora fecha a página desktop antes de abrir a móvel.
 
-Nenhuma captura simulada é apresentada como prova de funcionamento. Antes de usar na sessão, execute em navegador com WebGL 2, confira uma tentativa com vazamento e teste a abertura com o gabarito separado.
+## Limites concretos
+
+- Renderização por software não mede desempenho em GPU real. Não foi feito teste em aparelho celular físico, Safari ou Firefox.
+- Os MP3 são voz sintética em português; a cantiga é recitada. A reprodução e as transições de legenda foram verificadas tecnicamente, sem avaliação humana de interpretação vocal.
+- Legendas sincronizam por trecho (depoimento/verso), não palavra por palavra. Tosse e trinco são efeitos discretos sintetizados; todos os vestígios também aparecem por escrito.
+- Nenhum playtest com grupo real foi realizado: duração de 10–20 minutos e dificuldade são metas, não medidas.
+- O mapa preserva a saída de serviço para a mata do projeto anterior; o mestre deve adaptar esse croqui à geografia da sessão.
+- O gabarito não integra o build, mas o código cliente pode ser inspecionado. Não há validação competitiva em servidor.
+- Não houve merge nem comando de deploy de produção.

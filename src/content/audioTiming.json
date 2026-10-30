@@ -1,0 +1,51 @@
+{
+  "registro": {
+    "duration": 11.076,
+    "speechStart": 0.35,
+    "speechEnd": 8.21,
+    "verseStart": 8.66,
+    "verseEnd": 10.4
+  },
+  "chamado": {
+    "duration": 11.781,
+    "speechStart": 0.35,
+    "speechEnd": 8.91,
+    "verseStart": 9.36,
+    "verseEnd": 11.11
+  },
+  "eco": {
+    "duration": 11.912,
+    "speechStart": 0.35,
+    "speechEnd": 9.1,
+    "verseStart": 9.55,
+    "verseEnd": 11.25
+  },
+  "batente": {
+    "duration": 10.998,
+    "speechStart": 0.35,
+    "speechEnd": 7.69,
+    "verseStart": 8.14,
+    "verseEnd": 10.32
+  },
+  "mesa": {
+    "duration": 11.912,
+    "speechStart": 0.35,
+    "speechEnd": 8.84,
+    "verseStart": 9.29,
+    "verseEnd": 11.25
+  },
+  "aviso": {
+    "duration": 12.278,
+    "speechStart": 0.35,
+    "speechEnd": 9.23,
+    "verseStart": 9.68,
+    "verseEnd": 11.61
+  },
+  "fim": {
+    "duration": 10.919,
+    "speechStart": 0.35,
+    "speechEnd": 7.89,
+    "verseStart": 8.34,
+    "verseEnd": 10.245
+  }
+}

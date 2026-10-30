@@ -1,70 +1,54 @@
-# O Cofre da Água Morta
+# O Arquivo da Água Morta
 
-Minigame de horror psicológico para mesa de RPG. Um cofre industrial 3D com 16 módulos hidráulicos giratórios, água negra, manômetros físicos, alavanca, abertura manual e três recompensas narrativas.
+Minigame 3D de horror investigativo para a aventura de Caer Siddi. Sete fragmentos fixos de uma gravação adulterada precisam ser reorganizados. Depoimento, emendas, vestígios sonoros e uma cantiga permitem recuperar o aviso de Helena.
 
-## Publicar na Vercel
+## Rodar
 
-1. Extraia os arquivos deste ZIP.
-2. Envie o conteúdo desta pasta para um repositório GitHub. `package.json`, `index.html` e `vercel.json` devem estar na raiz selecionada.
-3. Importe o repositório na Vercel. Preset: **Vite**. Build: `npm run build`. Output: `dist`. Instalação: `npm ci`.
-4. Faça o deploy. Não precisa de banco de dados, variáveis de ambiente ou conta de serviço de áudio.
-
-O `vercel.json` já contém a configuração. O diretório `dist/` inclui a compilação pronta para hospedagens estáticas. Na Vercel, prefira publicar o código-fonte pela integração normal.
-
-## Rodar no computador
-
-Requer Node.js 22.12+ ou Node.js 24 e um navegador moderno com WebGL 2 e aceleração de hardware.
+Node.js 22.12+ ou 24 e navegador moderno com WebGL 2.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Abra o endereço indicado no terminal. No Windows, pode executar `INICIAR_WINDOWS.bat` para fazer esses passos. Para verificar a versão de produção: `npm run build`, depois `npm run preview`.
-
-Não abra `index.html` com duplo clique: módulos JavaScript precisam de um servidor HTTP.
-
-## Jogar
-
-- Inicie a inspeção. Um clique seleciona uma peça; outro clique a gira. Os botões inferiores giram nos dois sentidos.
-- Arraste o fundo para inspecionar as laterais. Roda do mouse ou gesto de pinça aproxima a câmera.
-- Toque nas chapas para ler as inscrições ampliadas.
-- Acione a bomba pela alavanca 3D ou pelo botão inferior.
-- Observe até onde a água realmente consegue chegar. Uma conexão incompatível interrompe o percurso e vaza naquela boca.
-- Use as 16 peças sem deixar vazamentos para liberar a porta. Após a batida, arraste o puxador da direita para a esquerda. Há também um botão acessível que puxa a porta em pequenos incrementos.
-- Dentro do cofre, inspecione a sirene, a planta e o relatório. Registre cada objeto no inventário da sessão.
-- O menu `?` oferece três pistas progressivas, marcação opcional do primeiro vazamento e reinício com confirmação.
-- Teclado: setas selecionam; `R` gira; `Shift + R` gira ao contrário; `Espaço` testa; `Esc` fecha a inspeção e solta a peça.
-
-O progresso fica no armazenamento local do navegador, incluindo rotações, porta, pistas, volume e objetos registrados. Navegação anônima e limpeza dos dados do site podem apagar o progresso. Não há sincronização entre jogadores: para uma resolução conjunta, compartilhe a tela do mestre ou de um jogador.
-
-## Conteúdo
-
-Sirene de manivela com uma utilização relevante, croqui esquemático de passagem de manutenção (adaptável pelo mestre) e Relatório 08. Não há escopeta neste cofre. A sirene é apenas inspecionada: o site não toca um alarme alto.
-
-## Validação
+Abra o endereço indicado. O atalho `INICIAR_WINDOWS.bat` continua disponível. Se o ambiente restringir a enumeração de interfaces de rede, use `npm run dev -- --host 127.0.0.1`.
 
 ```sh
 npm test
 npm run build
+npm run preview
 ```
 
-Os testes cobrem lógica, persistência, reinício e integração da cena. A unicidade é verificada por enumeração dos domínios com poda segura de vazamentos e por uma segunda enumeração independente das rotas simples.
+Não abra o HTML diretamente pelo gerenciador de arquivos.
 
-Veja `VALIDACAO.md` para o escopo e a limitação da verificação visual neste ambiente. `MESTRE_SPOILERS.md` contém o gabarito; não é importado pelo jogo nem servido pela compilação.
+## Jogar
+
+1. Inicie a inspeção e examine as sete emendas pelo aparelho ou pelo botão.
+2. Selecione uma faixa para ler a fala, o verso da cantiga e os vestígios. Vire o suporte e levante a ponta de adesivo quando quiser investigar a anotação.
+3. Reorganize arrastando ou com **Mover antes/depois**. As palavras não mudam de posição secretamente.
+4. **Ouvir só esta** e **Ouvir montagem** são prévias. **Conferir cópia** testa o ferrolho ao terminar a leitura. Pausa, parar e próxima faixa estão disponíveis; avançar é permitido também em silêncio.
+5. Após a montagem correta, puxe o manípulo para a esquerda ou use **Puxar porta**. Inspecione e registre sirene, croqui e relatório.
+
+Teclado: Tab percorre comandos; Enter ativa botões; ↑/↓ selecionam; Alt+↑/↓ movem; Espaço reproduz/pausa fora de botões e campos; Esc fecha diálogos. Há três dicas progressivas em Ajuda. Volume e mudo ficam no cabeçalho, inclusive no celular. Nenhum alarme alto é tocado.
+
+O progresso é local: montagem, descobertas sob emendas, dicas, volume, mudo, abertura e inventário. A versão 2 usa uma chave própria e ignora saves hidráulicos antigos. Sem armazenamento disponível, a partida continua com aviso. Não há sincronização entre jogadores: compartilhe uma tela para jogar em grupo.
+
+## Vercel
+
+O projeto já contém `vercel.json`. Importe este repositório com preset **Vite**, instalação `npm ci`, build `npm run build`, saída `dist`. Não exige banco, variáveis de ambiente ou API de voz durante a partida. Para revisar a alteração, selecione a branch `codex/arquivo-agua-morta` e use um ambiente Preview; esta entrega não faz merge nem deploy.
+
+Os MP3 e fontes estão no próprio projeto. O MP3 original de edição fica em `assets/`, fora do diretório público. Não é necessário regenerar áudio para construir o site.
 
 ## Arquitetura
 
-React + TypeScript + Vite; Three.js + React Three Fiber + Drei; estado em Zustand. Interpolação com amortecimento no loop de renderização, sem dependência adicional de GSAP.
+- `src/content/archive.ts`: falas fixas, cantiga, vestígios, dicas e relatório.
+- `src/logic/ArchiveSolver.ts`: validação por relações entre evidências.
+- `src/state/`: estado da partida, transporte de áudio e persistência defensiva.
+- `src/audio/ArchivePlayer.tsx`: reprodução local, legenda por trecho e relógio de fallback.
+- `src/scene/`: aparelho, cofre, câmera, porta e objetos 3D.
+- `src/ui/`: bancada ampliada, inspeção, controles, transcrições e inventário.
+- `scripts/prepare_audio.py`: recorte e mixagem reproduzíveis com Python e FFmpeg.
 
-- `src/logic/HydraulicGraphSolver.ts`: conectividade, primeira falha, percurso e enumeração.
-- `src/state/`: máquina de estados e persistência.
-- `src/scene/`: cofre, tubos, água, câmera, porta, manômetros e recompensas.
-- `src/audio/SoundManager.ts`: ambiente e efeitos originais por síntese Web Audio.
-- `src/ui/`: dicas, documentos, inspeção e comandos acessíveis.
+A solução física é um copiador de fita magnética com manivela de acionamento, roletes, cabeçote e suportes de emenda removíveis. A manivela governa o mecanismo ficcional; não é preciso girá-la continuamente. A bancada ampliada usa HTML para garantir leitura e operação por teclado. O conjunto e a inspeção da sirene são 3D.
 
-Todos os tubos e mecanismos são meshes. As janelas e os documentos ampliados usam interface legível; a hidráulica acontece na cena 3D. O líquido utiliza geometria de tubo com preenchimento progressivo no sentido da conexão calculada, shader animado e bolhas confinadas ao caminho. Não é simulação volumétrica de fluidos.
-
-## Recursos
-
-Modelos, texturas de desgaste e áudio originais/procedurais, sem downloads externos em tempo de jogo. Fontes empacotadas localmente. Consulte `CREDITOS_E_REFERENCIAS.md`.
+`MESTRE_SPOILERS.md` contém solução e justificativas; não tem link na interface nem importação no build. O cliente e seus critérios continuam inspecionáveis. `VALIDACAO.md` informa os testes executados e limites. A duração de 10–20 minutos é uma meta para grupo, ainda sem medição com jogadores.

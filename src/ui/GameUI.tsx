@@ -1,23 +1,526 @@
-import { useEffect,useState } from 'react';
-import { useGame } from '../state/store';
-import { TYPES } from '../logic/HydraulicGraphSolver';
-import { HintSystem } from './HintSystem';
-import { Inspection } from './Inspection';
-const statuses={idle:'O sistema está em repouso.',pumping:'A água está procurando passagem.',failure:'A pressão não se sustenta.',resonance:'As dezesseis bocas respiram juntas.',unlocked:'Você ouviu a batida. Puxe a porta.',open:'Algumas coisas deveriam permanecer fechadas.'};
-function Glyph({type}:{type:'drop'|'sound'|'question'|'reset'|'arrow'}){return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.25" aria-hidden="true">{type==='drop'?<path d="M12 3C9 8 5 11 5 15a7 7 0 0014 0c0-4-4-7-7-12zM8 15c0 2 1 3 3 3"/>:type==='sound'?<><path d="M4 9h4l5-4v14l-5-4H4zM17 8q5 4 0 8M16 11q2 1 0 2"/></>:type==='question'?<><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 116 0c0 2-3 2-3 5m0 2v1"/></>:type==='reset'?<path d="M4 10a8 8 0 111 8M4 4v6h6"/>:<path d="M4 12h16m-5-5l5 5-5 5"/>}</svg>;}
-export function GameUI(){const g=useGame(),[menu,setMenu]=useState<'sound'|'help'|'reset'|null>(null);const locked=!['idle','failure'].includes(g.phase);
- useEffect(()=>{const listener=(e:KeyboardEvent)=>{if((e.target as HTMLElement).matches('input,textarea,button'))return;const s=useGame.getState();if(e.key==='Escape'){s.inspect(null);s.select(null);setMenu(null);return;}if(!s.started||s.inspection)return;const i=s.selected??0;if(e.key==='ArrowRight'){e.preventDefault();s.select((i+1)%16);}if(e.key==='ArrowLeft'){e.preventDefault();s.select((i+15)%16);}if(e.key==='ArrowUp'){e.preventDefault();s.select((i+12)%16);}if(e.key==='ArrowDown'){e.preventDefault();s.select((i+4)%16);}if(e.key.toLowerCase()==='r'){e.preventDefault();s.turn(i,e.shiftKey?-1:1);}if(e.key===' '){e.preventDefault();s.pump();}};window.addEventListener('keydown',listener);return ()=>window.removeEventListener('keydown',listener);},[]);
- return <><div className="film-grain"/><div className="vignette"/><header className="topbar"><a href="#" onClick={e=>{e.preventDefault();setMenu(menu==='help'?null:'help');}} className="identity" aria-label="O Cofre da Água Morta, instruções"><Glyph type="drop"/><span>ÁGUA MORTA<small>BALNEÁRIO MUNICIPAL · ESTAÇÃO 08</small></span></a><div className="header-tools"><span className="local-save">{g.storageOK?'PROGRESSO SALVO':'SALVAMENTO INDISPONÍVEL'}</span><button className={menu==='sound'?'icon-button active':'icon-button'} aria-label="Volume do som" aria-expanded={menu==='sound'} onClick={()=>setMenu(menu==='sound'?null:'sound')}><Glyph type="sound"/></button><button className={menu==='help'?'icon-button active':'icon-button'} aria-label="Instruções e pistas" aria-expanded={menu==='help'} onClick={()=>setMenu(menu==='help'?null:'help')}><Glyph type="question"/></button></div></header>
- {menu==='sound'&&<aside className="floating-panel volume-panel"><label htmlFor="volume">Volume <span>{Math.round(g.volume*100)}%</span></label><input id="volume" aria-label="Volume" type="range" min="0" max="1" step=".01" value={g.volume} onChange={e=>g.setVolume(Number(e.target.value))}/><p>Ambiência original. Nenhum som de sirene.</p></aside>}
- {menu==='help'&&<aside className="floating-panel help-panel"><button className="panel-close" onClick={()=>setMenu(null)} aria-label="Fechar instruções">×</button><div className="eyebrow">MANUAL DO OPERADOR</div><h2>Faça a água voltar.</h2><p>Gire as peças para ligar a entrada ao retorno, passando pelos <strong>16 módulos</strong>. Cada abertura precisa encontrar outra abertura. Nenhuma pode vazar.</p><dl><dt>Inspecionar</dt><dd>Toque em um módulo ou inscrição.</dd><dt>Girar</dt><dd>Toque outra vez no módulo selecionado ou use os botões inferiores.</dd><dt>Câmera</dt><dd>Arraste o fundo. Use a roda ou dois dedos para aproximar.</dd><dt>Testar</dt><dd>Puxe a alavanca ou pressione “Acionar bomba”.</dd></dl><p className="keyboard">Teclado: setas selecionam · R gira · Shift + R volta · Espaço testa · Esc sai.</p><HintSystem/><button className="text-button reset-link" onClick={()=>setMenu('reset')}><Glyph type="reset"/> Reiniciar mecanismo</button></aside>}
- {menu==='reset'&&<div className="modal-scrim"><div className="confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="reset-title"><div className="eyebrow">RETORNAR AO SILÊNCIO</div><h2 id="reset-title">Reiniciar o mecanismo?</h2><p>As peças, pistas e objetos registrados voltarão ao estado inicial.</p><div className="confirm-actions"><button autoFocus onClick={()=>setMenu(null)}>Continuar aqui</button><button className="primary" onClick={()=>{g.reset();setMenu(null);}}>Reiniciar</button></div></div></div>}
- {!g.started?<section className="intro"><div className="eyebrow"><span className="tiny-line"/>UM MECANISMO ESQUECIDO</div><h1>O cofre da<br/><em>água morta.</em></h1><p className="intro-quote">Água morta não deveria correr.</p><p className="intro-description">Dezesseis bocas. Uma só sede.<br/>A floresta espera lá em cima.</p><button className="primary start" onClick={()=>{g.start();setMenu(null);}}>Iniciar inspeção <Glyph type="arrow"/></button><div className="intro-footnote">EXPERIÊNCIA 3D · SEM LIMITE DE TEMPO<br/><span>Som recomendado, em volume confortável.</span></div></section>:<>
- <div className="scene-caption"><span className="eyebrow">CASA DE BOMBAS / SUBSOLO</span><span>O COFRE DA ÁGUA MORTA</span></div>
- <div className={`status status-${g.phase}`} role="status" aria-live="polite"><i/>{statuses[g.phase]}{g.phase==='failure'&&g.result&&<small>{g.result.steps.length} de 16 módulos receberam água.{g.result.reason==='incomplete'?' O retorno chegou cedo demais.':''}</small>}</div>
- {g.selected!==null&&<div className="selection"><div><span className="eyebrow">MÓDULO {String(g.selected+1).padStart(2,'0')}</span><strong>{TYPES[g.selected]==='curve'?'Curva de 90°':'Tubo reto'}</strong><small>Linha {Math.floor(g.selected/4)+1} · Coluna {g.selected%4+1}</small></div><button aria-label="Girar módulo selecionado no sentido anti-horário" disabled={locked} onClick={()=>g.turn(g.selected!,-1)}>↶</button><button aria-label="Girar módulo selecionado no sentido horário" disabled={locked} onClick={()=>g.turn(g.selected!)}>↷</button><button className="deselect" aria-label="Soltar módulo" onClick={()=>g.select(null)}>×</button></div>}
- {g.phase==='open'&&<aside className="reward-tray"><div className="eyebrow">DENTRO DO COFRE</div>{[['siren','01','Sirene de manivela'],['map','02','Planta de manutenção'],['report','03','Relatório 08']].map(([id,num,title])=><button key={id} onClick={()=>g.inspect(id as 'siren'|'map'|'report')}><span>{num}</span>{title}<small>{g.collected.includes(id)?'✓':'↗'}</small></button>)}</aside>}
- <footer className="controlbar"><span className="control-instruction">{g.phase==='unlocked'?'Arraste o puxador para a esquerda.':g.phase==='open'?'Toque nos objetos para inspecionar.':'Toque para selecionar. Toque outra vez para girar.'}</span><div className="primary-controls">{g.phase==='unlocked'||g.phase==='open'?<button className="primary pump" onClick={()=>{g.openDoor(Math.min(2.1,g.doorAngle+.35));}}>{g.phase==='unlocked'?'Puxar porta':'Abrir mais a porta'} <Glyph type="arrow"/></button>:<button className="primary pump" disabled={locked} onClick={()=>g.pump()}><span className="pump-indicator"/>{g.phase==='pumping'?'Bombeando…':g.phase==='resonance'?'Pressurizando…':'Acionar bomba'} <small>ESPAÇO</small></button>}<button className="secondary" onClick={()=>setMenu(menu==='help'?null:'help')}>Consultar pistas <span>↗</span></button></div></footer>
- </>}
- <div className="bottom-serial">B.M. / 1976<span>O QUE ENTRA DEVE VOLTAR.</span></div><Inspection/>
- </>;
+import { useShallow } from "zustand/react/shallow";
+import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
+import { useGame } from "../state/store";
+import { FRAGMENTS } from "../content/archive";
+import timing from "../content/audioTiming.json";
+import { HintSystem } from "./HintSystem";
+import { Inspection } from "./Inspection";
+import { ArchivePlayer } from "../audio/ArchivePlayer";
+const useControls = () =>
+  useGame(useShallow(({ playTime, ...state }) => state));
+function Dialog({
+  children,
+  title,
+  onClose,
+  wide = false,
+}: {
+  children: ReactNode;
+  title: string;
+  onClose: () => void;
+  wide?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const old = document.activeElement as HTMLElement | null;
+    ref.current?.focus();
+    return () => old?.focus();
+  }, []);
+  return (
+    <div className="modal-scrim" onClick={onClose}>
+      <section
+        ref={ref}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className={`dialog ${wide ? "workbench" : ""}`}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.stopPropagation();
+            onClose();
+          }
+          if (e.key === "Tab") {
+            const els = Array.from(
+              ref.current?.querySelectorAll<HTMLElement>(
+                'button:not(:disabled),input,[tabindex="0"]',
+              ) ?? [],
+            );
+            if (!els.length) return;
+            const first = els[0],
+              last = els[els.length - 1];
+            if (
+              e.shiftKey &&
+              (document.activeElement === first ||
+                document.activeElement === ref.current)
+            ) {
+              e.preventDefault();
+              last.focus();
+            } else if (
+              !e.shiftKey &&
+              (document.activeElement === last ||
+                document.activeElement === ref.current)
+            ) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        }}
+      >
+        <button
+          className="close"
+          aria-label={`Fechar ${title}`}
+          onClick={onClose}
+        >
+          ×
+        </button>
+        {children}
+      </section>
+    </div>
+  );
+}
+function Transport() {
+  const g = useControls();
+  const locked = ["open", "unlocked"].includes(g.phase);
+  return (
+    <div className="transport">
+      {g.phase === "playing" ? (
+        <>
+          <button onClick={g.pause}>{g.paused ? "Retomar" : "Pausar"}</button>
+          <button onClick={g.stop}>Parar</button>
+          <button disabled={g.paused} onClick={g.next}>
+            Próxima faixa
+          </button>
+        </>
+      ) : (
+        <>
+          <button disabled={locked} onClick={() => g.play()}>
+            ▶ Ouvir montagem
+          </button>
+          <button
+            className="primary"
+            disabled={locked}
+            onClick={() => g.play(undefined, true)}
+          >
+            Conferir cópia ↗
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+function Playback() {
+  const id = useGame((s) => s.playhead),
+    t = useGame((s) => s.playTime),
+    paused = useGame((s) => s.paused),
+    error = useGame((s) => s.audioError);
+  if (!id) return null;
+  const f = FRAGMENTS[id],
+    a = timing[id];
+  const verse = t >= a.verseStart;
+  return (
+    <div className="playback" aria-label="Transcrição da reprodução">
+      <div className="eyebrow">
+        {paused ? "PAUSADO" : verse ? "CANTIGA AO FUNDO" : "DEPOIMENTO"} ·{" "}
+        {f.label}
+      </div>
+      <progress aria-label="Progresso da faixa" value={t} max={a.duration} />
+      <p className={verse ? "verse" : ""}>{verse ? f.verse : f.text}</p>
+      <small>Vestígio sonoro: {f.sound}</small>
+      {error && (
+        <small>
+          O áudio não pôde tocar. A transcrição continua disponível; use Próxima
+          faixa para avançar.
+        </small>
+      )}
+    </div>
+  );
+}
+function Bench() {
+  const g = useControls(),
+    [side, setSide] = useState<"front" | "back">("front"),
+    [drag, setDrag] = useState<number | null>(null);
+  const index = g.selected ?? 0,
+    id = g.order[index],
+    f = FRAGMENTS[id],
+    locked = !["idle", "failure"].includes(g.phase),
+    revealed = g.revealed.includes(id);
+  useEffect(() => setSide("front"), [id]);
+  return (
+    <Dialog wide title="Mesa de emendas" onClose={() => g.setWorkbench(false)}>
+      <div className="eyebrow">COPIADOR MAGNÉTICO · CAER SIDDI</div>
+      <h2>Mesa de emendas</h2>
+      <p className="bench-intro">
+        Uma voz pede que abram. Reconstitua o que veio antes e depois.
+      </p>
+      <div className="bench-grid">
+        <div className="rail">
+          <div className="rail-heading">
+            CARRETEL DE ORIGEM <span>↓ LEITURA</span>
+          </div>
+          <ol aria-label="Ordem das faixas">
+            {g.order.map((fid, i) => (
+              <li
+                key={fid}
+                className={`${index === i ? "selected" : ""} ${g.playhead === fid ? "reading" : ""} ${drag === i ? "dragging" : ""}`}
+                draggable={!locked}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData("text/plain", String(i));
+                  e.dataTransfer.effectAllowed = "move";
+                  setDrag(i);
+                }}
+                onDragEnd={() => setDrag(null)}
+                onDragOver={(e) => {
+                  if (!locked) e.preventDefault();
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (locked) return;
+                  const raw = e.dataTransfer.getData("text/plain");
+                  if (/^\d$/.test(raw)) g.move(Number(raw), i);
+                  setDrag(null);
+                }}
+              >
+                <span className="slot">{String(i + 1).padStart(2, "0")}</span>
+                <button
+                  aria-pressed={index === i}
+                  onClick={() => g.select(i)}
+                  aria-label={`Inspecionar ${FRAGMENTS[fid].label}`}
+                >
+                  <span className="perforations" aria-hidden="true" />
+                  <strong>{FRAGMENTS[fid].label}</strong>
+                  <small>{FRAGMENTS[fid].text.slice(0, 49)}…</small>
+                  <span className="perforations" aria-hidden="true" />
+                </button>
+                <span className="grip" aria-hidden="true">
+                  ⠿
+                </span>
+              </li>
+            ))}
+          </ol>
+          <div className="rail-heading">CARRETEL DE RECOLHIMENTO</div>
+          <p className="tiny">
+            Arraste uma faixa para mudar sua posição. Ou selecione e use os
+            botões.
+          </p>
+        </div>
+        <div className="inspection-desk">
+          <div className="desk-heading">
+            <span>FAIXA EM EXAME</span>
+            <button
+              onClick={() => setSide(side === "front" ? "back" : "front")}
+            >
+              ↶ Virar para {side === "front" ? "o verso" : "a frente"}
+            </button>
+          </div>
+          <article className={`splice-paper ${side}`}>
+            <div className="eyebrow">
+              {side === "front" ? "TRANSCRIÇÃO DA VOZ" : "VERSO DO SUPORTE"}
+            </div>
+            <h3>{f.label}</h3>
+            {side === "front" ? (
+              <>
+                <p className="testimony">“{f.text}”</p>
+                <div className="song">
+                  <span>Cantiga ao fundo · transcrição</span>
+                  <p>{f.verse}</p>
+                </div>
+                <p className="edge-note">{f.front}</p>
+              </>
+            ) : (
+              <>
+                <p className="testimony">{f.back}</p>
+                <div className="loose-tape">
+                  <span>Uma ponta de adesivo está levantada.</span>
+                  <button onClick={() => g.reveal(id)} disabled={revealed}>
+                    {revealed ? "Emenda levantada" : "Levantar a emenda"}
+                  </button>
+                </div>
+                {revealed && <p className="handwritten">{f.hidden}</p>}
+              </>
+            )}
+            <div className="sound-trace">
+              <span aria-hidden="true">⌁ ⌁ ⌁</span>
+              <p>{f.sound}</p>
+            </div>
+          </article>
+          <div className="splice-actions">
+            <button
+              disabled={locked || index === 0}
+              onClick={() => g.move(index, index - 1)}
+            >
+              ↑ Mover antes
+            </button>
+            <button
+              disabled={locked || index === 6}
+              onClick={() => g.move(index, index + 1)}
+            >
+              ↓ Mover depois
+            </button>
+            <button disabled={locked} onClick={() => g.play(id)}>
+              ▶ Ouvir só esta
+            </button>
+          </div>
+          <p className="tiny">
+            As palavras não mudam quando você move a faixa. Compare também as
+            emendas, o ambiente e os versos.
+          </p>
+          <Playback />
+        </div>
+      </div>
+      <div className="bench-footer">
+        <p role="status" aria-live="polite">
+          {g.message}
+        </p>
+        <Transport />
+      </div>
+    </Dialog>
+  );
+}
+export function GameUI() {
+  const g = useControls(),
+    [menu, setMenu] = useState<"help" | "sound" | "reset" | null>(null);
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      const s = useGame.getState();
+      if (e.key === "Escape") {
+        if (s.inspection) {
+          s.inspect(null);
+          return;
+        }
+        if (menu) {
+          setMenu(null);
+          return;
+        }
+        s.setWorkbench(false);
+        return;
+      }
+      if (!s.started || s.inspection || menu) return;
+      const target = e.target as HTMLElement;
+      if (target.matches("input,textarea,select")) return;
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        e.preventDefault();
+        const i = s.selected ?? 0,
+          d = e.key === "ArrowUp" ? -1 : 1;
+        if (e.altKey) s.move(i, i + d);
+        else s.select(Math.max(0, Math.min(6, i + d)));
+      }
+      if (e.code === "Space" && !target.matches("button")) {
+        e.preventDefault();
+        s.phase === "playing" ? s.pause() : s.play();
+      }
+    };
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, [menu]);
+  return (
+    <>
+      <ArchivePlayer />
+      <div className="film-grain" />
+      <div className="vignette" />
+      <header className="topbar">
+        <div className="identity">
+          <span className="archive-mark" aria-hidden="true">
+            ◉
+          </span>
+          <span>
+            ÁGUA MORTA<small>ARQUIVO DA INTERDIÇÃO</small>
+          </span>
+        </div>
+        <div className="header-tools">
+          <span className="local-save">
+            {g.storageOK ? "SALVO NESTE NAVEGADOR" : "SEM SALVAMENTO LOCAL"}
+          </span>
+          <button
+            aria-label={g.muted ? "Ativar som" : "Silenciar"}
+            onClick={g.toggleMute}
+          >
+            {g.muted ? "Som desligado" : "Som ligado"}
+          </button>
+          <button onClick={() => setMenu("sound")} aria-label="Ajustar volume">
+            Volume
+          </button>
+          <button onClick={() => setMenu("help")}>Ajuda</button>
+        </div>
+      </header>
+      {!g.started ? (
+        <section className="intro">
+          <div className="eyebrow">UM AVISO REMONTADO</div>
+          <h1>
+            O arquivo da
+            <br />
+            <em>água morta.</em>
+          </h1>
+          <p className="intro-quote">
+            A voz é conhecida.
+            <br />A ordem está errada.
+          </p>
+          <p className="intro-description">
+            Sete emendas. Uma noite interrompida.
+            <br />
+            Alguém deixou o chamado antes da advertência.
+          </p>
+          <button className="primary start" onClick={g.start}>
+            Iniciar inspeção <span>↗</span>
+          </button>
+          <div className="intro-footnote">
+            UMA EXPERIÊNCIA 3D · SEM LIMITE DE TEMPO
+            <br />
+            Voz em português · todas as pistas também em texto
+          </div>
+        </section>
+      ) : (
+        <>
+          <div className="scene-caption">
+            <span className="eyebrow">SUBSOLO DO PAVILHÃO</span>
+            <span>CÓPIA DE SEGURANÇA / PEÇA 7</span>
+          </div>
+          <div className="status" role="status" aria-live="polite">
+            <i />
+            {g.phase === "open"
+              ? "O arquivo está ao alcance. Examine o que foi guardado."
+              : g.phase === "unlocked"
+                ? "O ferrolho cedeu. Puxe a porta."
+                : g.message}
+          </div>
+          {g.phase === "open" ? (
+            <aside className="reward-tray">
+              <div className="eyebrow">DOCUMENTOS E EQUIPAMENTO</div>
+              {[
+                ["siren", "Sirene de manivela"],
+                ["map", "Planta de manutenção"],
+                ["report", "Relatório de interdição"],
+              ].map(([id, title]) => (
+                <button
+                  key={id}
+                  onClick={() => g.inspect(id as "siren" | "map" | "report")}
+                >
+                  {title}
+                  <span>{g.collected.includes(id) ? "✓" : "↗"}</span>
+                </button>
+              ))}
+            </aside>
+          ) : !g.workbench && g.phase === "playing" ? (
+            <div className="scene-playback">
+              <Playback />
+              <Transport />
+            </div>
+          ) : null}
+          <footer className="controlbar">
+            <div>
+              <span className="eyebrow">
+                {g.phase === "open"
+                  ? "ARQUIVO RECUPERADO"
+                  : "INSPEÇÃO DO MECANISMO"}
+              </span>
+              <p>
+                {["open", "unlocked"].includes(g.phase)
+                  ? "Puxe o manípulo para a esquerda ou use o botão."
+                  : "Toque nas faixas. Arraste o fundo para examinar o aparelho."}
+              </p>
+            </div>
+            <div className="primary-controls">
+              {["unlocked", "open"].includes(g.phase) ? (
+                <button
+                  className="primary"
+                  onClick={() => g.openDoor(g.doorAngle + 0.4)}
+                >
+                  {g.phase === "open" ? "Abrir mais a porta" : "Puxar porta"} ↗
+                </button>
+              ) : (
+                <button
+                  className="primary"
+                  onClick={() => {
+                    if (g.selected === null) g.select(0);
+                    g.setWorkbench(true);
+                  }}
+                >
+                  Examinar as sete emendas ↗
+                </button>
+              )}
+              <button onClick={() => setMenu("help")}>Consultar pistas</button>
+            </div>
+          </footer>
+        </>
+      )}
+      <div className="bottom-serial">
+        CAER SIDDI<span>NÃO CONFUNDA A VOZ COM QUEM FALA.</span>
+      </div>
+      {g.workbench && g.started && <Bench />}
+      {menu === "help" && (
+        <Dialog title="Manual e pistas" onClose={() => setMenu(null)}>
+          <div className="eyebrow">MANUAL DO OPERADOR</div>
+          <h2>Reconstitua o aviso.</h2>
+          <p>
+            As sete faixas pertencem à mesma cópia. Mova seus suportes até
+            recuperar a continuidade da voz, dos sons e da cantiga.
+          </p>
+          <p>
+            Examine a frente e o verso. As pontas soltas podem esconder
+            anotações. A transcrição reproduz todas as pistas necessárias,
+            inclusive os vestígios sonoros.
+          </p>
+          <p>
+            “Ouvir montagem” é uma prévia. “Conferir cópia” faz a leitura final
+            e testa o ferrolho. Você pode pausar, parar ou avançar cada faixa,
+            sem perder a montagem.
+          </p>
+          <p className="keyboard">
+            Teclado: ↑ ↓ selecionam · Alt + ↑ ↓ movem · Espaço reproduz/pausa
+            quando o foco não está num botão · Esc fecha.
+          </p>
+          <HintSystem />
+          <button className="reset-link" onClick={() => setMenu("reset")}>
+            Reiniciar arquivo…
+          </button>
+        </Dialog>
+      )}
+      {menu === "sound" && (
+        <Dialog title="Volume" onClose={() => setMenu(null)}>
+          <div className="eyebrow">REPRODUÇÃO</div>
+          <h2>Escute de perto.</h2>
+          <label htmlFor="volume">Volume · {Math.round(g.volume * 100)}%</label>
+          <input
+            id="volume"
+            type="range"
+            min="0"
+            max="1"
+            step=".01"
+            value={g.volume}
+            onChange={(e) => g.setVolume(Number(e.target.value))}
+          />
+          <button onClick={g.toggleMute}>
+            {g.muted ? "Ativar som" : "Silenciar tudo"}
+          </button>
+          <p>
+            Voz sintética em português, gravada para esta experiência. A cantiga
+            é recitada. Nenhum alarme alto ou microfone.
+          </p>
+        </Dialog>
+      )}
+      {menu === "reset" && (
+        <Dialog title="Confirmar reinício" onClose={() => setMenu(null)}>
+          <h2>Reiniciar o arquivo?</h2>
+          <p>
+            A montagem, as descobertas, as dicas e o inventário serão apagados
+            neste navegador.
+          </p>
+          <div className="transport">
+            <button onClick={() => setMenu(null)}>Continuar aqui</button>
+            <button
+              className="primary"
+              onClick={() => {
+                g.reset();
+                setMenu(null);
+              }}
+            >
+              Reiniciar
+            </button>
+          </div>
+        </Dialog>
+      )}
+      <Inspection />
+    </>
+  );
 }
