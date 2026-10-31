@@ -79,6 +79,16 @@ export function ExplorationUI() {
           ÁGUA MORTA<small>PASSEIO PELO DEPÓSITO</small>
         </div>
         <div className="header-tools">
+          <button
+            className="mode-toggle"
+            title="Abrir o puzzle principal em vista fixa"
+            onClick={() => {
+              useGame.getState().start();
+              useExplore.getState().leave();
+            }}
+          >
+            Puzzle principal
+          </button>
           <button onClick={useExplore.getState().book}>
             Caderno ({found.length})
           </button>
