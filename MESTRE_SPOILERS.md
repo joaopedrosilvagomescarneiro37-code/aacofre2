@@ -63,3 +63,7 @@ O relatório é a recompensa histórica, não uma chave indispensável ao puzzle
 Dê tempo para discussão. Se travarem, ofereça as três dicas do próprio menu, na ordem. Erros mostram uma incompatibilidade concreta e preservam toda a organização. Não cobre a repetição integral da gravação a cada tentativa. Os rótulos de vestígios sonoros garantem uma resolução sem áudio.
 
 Meta de duração: 10–20 minutos em grupo, não aferida em playtest humano. Um leitor atento pode resolver mais rápido. Para manter o interesse, pergunte por que o chamado é perigoso e como perceberam que o porteiro não era quem falava; não esconda controles nem invente novas condições após o acerto.
+
+## Passeio opcional
+
+Veja `SEGREDOS_DO_DEPOSITO.md` para os seis objetos, as fontes do Notion e a distinção entre motivos canônicos e sua colocação autoral no depósito. O passeio, os símbolos e o caderno não fazem parte da solução da gravação.

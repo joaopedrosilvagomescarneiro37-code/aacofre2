@@ -20,3 +20,7 @@ Voz sintética em português, gerada via ferramenta de narração HeyGen em 30/1
 A matriz preserva a origem do áudio e permite refazer os recortes. Nenhuma chamada ao serviço é feita durante a partida. A voz gerada não é apresentada como recurso CC0; sua utilização segue os termos do serviço de origem.
 
 Silent Hill e jogos semelhantes foram referências de relação entre objeto, narrativa e dedução. Nenhuma fala, melodia, modelo, textura, personagem ou puzzle específico desses jogos foi incorporado.
+
+## Símbolos e depósito
+
+Motivos consultados no Notion, seção visual atual de 04B: Memória (sol espiral), Criação (árvore espelhada), Verdade (olho dividido), Tempo (relógio sem ponteiros), crescentes e marcas quádruplas. Desenhos SVG originais em `src/content/marks.ts`, interpretando as descrições escritas, não cópias de imagens. Localização, inscrições curtas e pato são adições autorais. Fontes e limites em `SEGREDOS_DO_DEPOSITO.md`.

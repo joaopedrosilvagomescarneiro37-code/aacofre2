@@ -1,3 +1,4 @@
+import {useExplore} from "../state/exploration";
 import { useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useFrame } from '@react-three/fiber';
@@ -8,7 +9,7 @@ import { darkIron,brass,iron } from './materials';
 import { Box,Tube } from './parts';
 export function SafeDoor({children}:{children:ReactNode}){const pivot=useRef<THREE.Group>(null);const drag=useRef<{x:number;angle:number}|null>(null);
  useFrame((_,dt)=>{if(pivot.current)pivot.current.rotation.y=THREE.MathUtils.damp(pivot.current.rotation.y,-useGame.getState().doorAngle,6,dt);});
- const begin=(x:number)=>{const s=useGame.getState();if(!['unlocked','open'].includes(s.phase))return;drag.current={x,angle:s.doorAngle};useGame.setState({doorDragging:true});sound.door();};
+ const begin=(x:number)=>{if(useExplore.getState().walking)return;const s=useGame.getState();if(!['unlocked','open'].includes(s.phase))return;drag.current={x,angle:s.doorAngle};useGame.setState({doorDragging:true});sound.door();};
  return <group name="door-pivot" ref={pivot} position={[-2.55,0,.65]}><group position={[2.55,0,-.65]}>
   <Box position={[0,0,.7]} size={[5.03,6.25,.32]} material={iron}/>
   <Box position={[0,0,.89]} size={[4.82,6.04,.05]} material={darkIron}/>

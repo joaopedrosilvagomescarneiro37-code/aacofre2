@@ -1,3 +1,4 @@
+import { useExplore } from "./exploration";
 import { create } from "zustand";
 import { INITIAL, IDS, type FragmentId } from "../content/archive";
 import { move, solve } from "../logic/ArchiveSolver";
@@ -81,6 +82,7 @@ export const useGame = create<State>((set, get) => ({
     set({ started: true });
   },
   select: (i) => {
+    if (useExplore.getState().walking) return;
     if (i !== null && (!Number.isInteger(i) || i < 0 || i >= 7)) return;
     set({ selected: i, inspection: null });
   },
@@ -98,6 +100,7 @@ export const useGame = create<State>((set, get) => ({
     });
   },
   inspect: (i) => {
+    if (useExplore.getState().walking) return;
     if (
       i &&
       REWARDS.includes(i as (typeof REWARDS)[number]) &&
@@ -122,6 +125,7 @@ export const useGame = create<State>((set, get) => ({
     set({ muted });
   },
   openDoor: (a) => {
+    if (useExplore.getState().walking) return;
     if (!["open", "unlocked"].includes(get().phase)) return;
     set({
       doorAngle: Math.max(0.13, Math.min(2.1, a)),
@@ -158,8 +162,12 @@ export const useGame = create<State>((set, get) => ({
         "A montagem começa por uma ordem para abrir. Falta alguma coisa.",
     }),
   toggleHelp: () => set({ help: !get().help }),
-  setWorkbench: (workbench) => set({ workbench }),
+  setWorkbench: (workbench) => {
+    if (workbench && useExplore.getState().walking) return;
+    set({ workbench });
+  },
   play: (single, checking = false) => {
+    if (useExplore.getState().walking) return;
     const s = get();
     if (!["idle", "failure"].includes(s.phase)) return;
     const queue = single ? [single] : [...s.order];

@@ -4,6 +4,9 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
 import * as THREE from "three";
 import { ArchiveSafe } from "./ArchiveSafe";
+import { WalkingCamera } from "./WalkingCamera";
+import { ExplorationRoom } from "./ExplorationRoom";
+import { useExplore } from "../state/exploration";
 import { InspectionCamera } from "./InspectionCamera";
 import { Box, Tube } from "./parts";
 import { concreteMap, darkIron, brass } from "./materials";
@@ -116,9 +119,14 @@ function Atmosphere() {
     if (light.current) {
       const s = useGame.getState();
       if (s.phase !== "failure") failureStart.current = null;
-      else if (failureStart.current === null) failureStart.current = clock.elapsedTime;
-      const age = failureStart.current === null ? 1 : clock.elapsedTime - failureStart.current;
-      light.current.intensity = age < .8 ? 5 - Math.sin(age / .8 * Math.PI) * 1.2 : 5;
+      else if (failureStart.current === null)
+        failureStart.current = clock.elapsedTime;
+      const age =
+        failureStart.current === null
+          ? 1
+          : clock.elapsedTime - failureStart.current;
+      light.current.intensity =
+        age < 0.8 ? 5 - Math.sin((age / 0.8) * Math.PI) * 1.2 : 5;
     }
   });
   return (
@@ -168,12 +176,14 @@ class SceneBoundary extends Component<
   }
 }
 export function SafeScene() {
+  const walking = useExplore((s) => s.walking),
+    secretOpen = useExplore((s) => !!s.opened);
   const started = useGame((s) => s.started),
     covered = useGame((s) => s.workbench || !!s.inspection);
   return (
     <SceneBoundary>
       <Canvas
-        frameloop={covered ? "never" : "always"}
+        frameloop={covered || secretOpen ? "never" : "always"}
         style={{ pointerEvents: started ? "auto" : "none" }}
         shadows
         dpr={[1, 1.5]}
@@ -233,8 +243,9 @@ export function SafeScene() {
           </Environment>
           <Room />
           <ArchiveSafe />
+          <ExplorationRoom />
           <Atmosphere />
-          <InspectionCamera />
+          {walking ? <WalkingCamera /> : <InspectionCamera />}
         </Suspense>
       </Canvas>
     </SceneBoundary>

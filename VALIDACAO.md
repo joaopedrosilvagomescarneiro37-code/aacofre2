@@ -44,3 +44,13 @@ Etapa móvel executada separadamente em viewport 390 × 844 com emulação de to
 - O mapa preserva a saída de serviço para a mata do projeto anterior; o mestre deve adaptar esse croqui à geografia da sessão.
 - O gabarito não integra o build, mas o código cliente pode ser inspecionado. Não há validação competitiva em servidor.
 - Não houve merge nem comando de deploy de produção.
+
+## Atualização 2.1 — exploração e símbolos (31/10/2026)
+
+`npm test`: **27 testes passaram**. Os nove novos cobrem limites da sala, deslizamento, passos grandes, porta aberta, proximidade/direção, descobertas sem destrancar o cofre, revisão restrita ao que foi descoberto, salvamento/sanitização de teorias e falha de armazenamento.
+
+`npm run build`: TypeScript e Vite passaram. Bundle principal aproximadamente 1,25 MB / 358 KB gzip. Marcas SVG são geradas localmente; não há novas dependências de execução nem downloads de imagens externas.
+
+Fontes do Notion e distinção entre cânone e colocação autoral estão em `SEGREDOS_DO_DEPOSITO.md`. O caderno não valida teorias, não executa texto digitado e não transforma símbolos em senha.
+
+Script de verificação: `scripts/exploration-check.mjs`. Usa teclas reais para visitar os objetos e lê a câmera apenas para verificar posições, sem teletransportá-la. Inclui arraste para olhar, pausa de movimento em diálogos, caderno, retorno ao puzzle, recarga e toque móvel. A inspeção da execução está sendo concluída nesta atualização.

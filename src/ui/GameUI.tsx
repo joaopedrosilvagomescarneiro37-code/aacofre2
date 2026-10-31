@@ -1,3 +1,5 @@
+import { useExplore } from "../state/exploration";
+import { ExplorationUI } from "./ExplorationUI";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
@@ -279,11 +281,13 @@ function Bench() {
   );
 }
 export function GameUI() {
+  const walking = useExplore((s) => s.walking);
   const g = useControls(),
     [menu, setMenu] = useState<"help" | "sound" | "reset" | null>(null);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       const s = useGame.getState();
+      if (useExplore.getState().walking) return;
       if (e.key === "Escape") {
         if (s.inspection) {
           s.inspect(null);
@@ -314,6 +318,13 @@ export function GameUI() {
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
   }, [menu]);
+  if (g.started && walking)
+    return (
+      <>
+        <ArchivePlayer />
+        <ExplorationUI />
+      </>
+    );
   return (
     <>
       <ArchivePlayer />
@@ -329,6 +340,19 @@ export function GameUI() {
           </span>
         </div>
         <div className="header-tools">
+          {g.started && (
+            <button
+              className="explore-button"
+              onClick={() => {
+                g.stop();
+                g.inspect(null);
+                g.setWorkbench(false);
+                useExplore.getState().enter();
+              }}
+            >
+              Explorar a sala
+            </button>
+          )}
           <span className="local-save">
             {g.storageOK ? "SALVO NESTE NAVEGADOR" : "SEM SALVAMENTO LOCAL"}
           </span>

@@ -33,6 +33,16 @@ Teclado: Tab percorre comandos; Enter ativa botões; ↑/↓ selecionam; Alt+↑
 
 O progresso é local: montagem, descobertas sob emendas, dicas, volume, mudo, abertura e inventário. A versão 2 usa uma chave própria e ignora saves hidráulicos antigos. Sem armazenamento disponível, a partida continua com aviso. Não há sincronização entre jogadores: compartilhe uma tela para jogar em grupo.
 
+## Exploração e segredos
+
+Use **Explorar a sala** depois de iniciar. WASD anda, arrastar olha, ↑/↓ andam e ←/→ giram. **E** ou o botão central examina objetos próximos e à frente. No celular, mantenha os botões de movimento pressionados e arraste a cena para olhar. Não exige captura do mouse. **Esc** fecha uma observação; fora dela, volta ao cofre. O botão **Voltar ao cofre** faz o mesmo sem perder a montagem.
+
+O depósito contém cinco vestígios inspirados no Notion da campanha e um easter egg. São opcionais e não destrancam o cofre. **Caderno** reúne apenas os desenhos já revelados, oferece comparações observáveis e um espaço de até 2.000 caracteres para suas teorias. O diário usa a chave local `agua-morta:passeio:v2`, independente do puzzle, e não envia anotações a um servidor. A posição de caminhada não é salva; cada passeio começa diante do cofre.
+
+Colisões cobrem paredes, móveis, corpo do cofre e sua porta aberta. Movimento pausa ao examinar objetos ou escrever no caderno. A renderização da cena coberta também pausa. O mapa explorável é este depósito; não inclui todas as áreas da one-shot.
+
+Fontes, limites de cânone e localizações dos segredos estão em `SEGREDOS_DO_DEPOSITO.md`, somente para o mestre, fora do build. Não consulte esse arquivo se quiser descobri-los jogando.
+
 ## Vercel
 
 O projeto já contém `vercel.json`. Importe este repositório com preset **Vite**, instalação `npm ci`, build `npm run build`, saída `dist`. Não exige banco, variáveis de ambiente ou API de voz durante a partida. Para revisar a alteração, selecione a branch `codex/arquivo-agua-morta` e use um ambiente Preview; esta entrega não faz merge nem deploy.
