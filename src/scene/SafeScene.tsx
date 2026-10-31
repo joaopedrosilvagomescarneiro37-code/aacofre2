@@ -197,12 +197,12 @@ export function SafeScene() {
         }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.12;
+          gl.toneMappingExposure = 1.2;
         }}
       >
         <color attach="background" args={["#111a15"]} />
         <fog attach="fog" args={["#111a15", 16, 38]} />
-        <ambientLight intensity={0.6} />
+        <ambientLight intensity={0.75} />
         <hemisphereLight args={["#9baea0", "#28291c", 1.3]} />
         <directionalLight
           position={[-4, 6, 8]}

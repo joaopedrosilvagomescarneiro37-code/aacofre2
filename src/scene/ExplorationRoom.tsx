@@ -71,7 +71,7 @@ export function ExplorationRoom() {
     () =>
       new THREE.MeshStandardMaterial({
         map: concreteMap,
-        color: "#4b5c50",
+        color: "#65786a",
         roughness: 0.95,
       }),
     [],
