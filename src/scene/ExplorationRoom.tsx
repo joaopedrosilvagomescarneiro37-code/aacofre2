@@ -49,7 +49,7 @@ function Secret({
         <group
           position={
             id === "tree"
-              ? [0, -0.39, 0]
+              ? [0, -0.37, 0]
               : [0, 0, id === "eye" ? 0.67 : id === "clock" ? 0.27 : 0.06]
           }
           rotation={id === "tree" ? [-Math.PI / 2, 0, 0] : [0, 0, 0]}
