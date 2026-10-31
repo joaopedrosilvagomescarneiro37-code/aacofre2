@@ -33,7 +33,7 @@ type State = {
 };
 export const useExplore = create<State>((set, get) => ({
   ...restore(),
-  walking: false,
+  walking: true,
   near: null,
   opened: null,
   storageOK: true,

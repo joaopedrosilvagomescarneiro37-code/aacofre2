@@ -111,20 +111,13 @@ export function stepPosition(
   }
   return { x, z };
 }
-export function nearby(
-  x: number,
-  z: number,
-  yaw: number,
-): SecretId | "safe" | null {
-  const candidates = [
-    ...SECRETS.map((s) => ({
-      id: s.id as SecretId | "safe",
+export function nearby(x: number, z: number, yaw: number): SecretId | null {
+  const candidates = SECRETS.map((s) => ({
+      id: s.id as SecretId,
       x: s.position[0],
       z: s.position[2],
       r: 2.5,
-    })),
-    { id: "safe" as const, x: 0, z: 1, r: 4 },
-  ];
+    }));
   return (
     candidates
       .map((c) => ({

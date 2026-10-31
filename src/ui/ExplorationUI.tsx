@@ -55,15 +55,11 @@ export function ExplorationUI() {
   const secret = SECRETS.find((s) => s.id === opened);
   const known = !!secret && found.includes(secret.id),
     journal = opened === "journal";
-  const nearLabel =
-    near === "safe"
-      ? "Examinar o cofre"
-      : SECRETS.find((s) => s.id === near)?.title;
+  const nearLabel = SECRETS.find((s) => s.id === near)?.title;
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if (useExplore.getState().opened) useExplore.getState().close();
-        else useExplore.getState().leave();
       }
     };
     window.addEventListener("keydown", key);
@@ -89,13 +85,12 @@ export function ExplorationUI() {
           <button onClick={useGame.getState().toggleMute}>
             {muted ? "Ativar som" : "Silenciar"}
           </button>
-          <button onClick={useExplore.getState().leave}>Voltar ao cofre</button>
         </div>
       </header>
       <div className="walk-notes">
         <span className="eyebrow">OBJETOS ESQUECIDOS</span>
         <p>Há marcas sob o que deixaram aqui.</p>
-        <small>Explore à vontade. O cofre pode esperar.</small>
+        <small>Procure marcas nos objetos. Aproxime-se e pressione E para examinar.</small>
       </div>
       <div className="walk-reticle" aria-hidden="true">
         ·

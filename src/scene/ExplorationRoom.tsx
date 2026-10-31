@@ -108,7 +108,7 @@ export function ExplorationRoom() {
           <pointLight
             position={[x, 2.2, 8]}
             color="#e4c99b"
-            intensity={34}
+            intensity={48}
             distance={13}
           />
         </group>

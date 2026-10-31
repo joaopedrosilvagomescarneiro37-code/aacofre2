@@ -178,13 +178,12 @@ class SceneBoundary extends Component<
 export function SafeScene() {
   const walking = useExplore((s) => s.walking),
     secretOpen = useExplore((s) => !!s.opened);
-  const started = useGame((s) => s.started),
-    covered = useGame((s) => s.workbench || !!s.inspection);
+  const covered = useGame((s) => s.workbench || !!s.inspection);
   return (
     <SceneBoundary>
       <Canvas
         frameloop={covered || secretOpen ? "never" : "always"}
-        style={{ pointerEvents: started ? "auto" : "none" }}
+        style={{ pointerEvents: walking ? "auto" : "none" }}
         shadows
         dpr={[1, 1.5]}
         camera={{ position: [4, 0.7, 13], fov: 43, near: 0.1, far: 65 }}
