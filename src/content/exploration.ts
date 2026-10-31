@@ -41,7 +41,7 @@ export const SECRETS = [
     before:
       "Uma tira de tecido cobre marcas na parede. A costura usa linha vermelha e linha clara, cruzadas várias vezes.",
     after:
-      "O avesso mostra apenas um pedaço de uma trama maior. Há crescentes na margem e outra marca de quatro partes. Duas palavras sobrevivem: “NASCER” e “ESCOLHER”. O tecido foi cortado depois delas.",
+      "O avesso mostra apenas um pedaço de uma trama maior. Há crescentes na margem e outra marca de quatro partes. Duas palavras sobrevivem: “NASCER” e “ESCOLHER”. O tecido foi cortado depois delas. Preso na costura há um recibo quase apagado: “custódia 06 — devolver sem abrir”. Não diz o que foi guardado, nem quem assinou.",
     motif: "weave",
   },
   {

@@ -31,8 +31,8 @@ O registro de descobertas permite comparar os desenhos e escrever teorias locais
 - A marca de quatro partes e as duas palavras estão relacionadas? O que falta foi perdido, retirado ou nunca escrito?
 - O bilhete foi deixado no ponto das 17h43 ou apenas cita aquele horário?
 
-A página 04B pede explicitamente não fechar a interpretação do centro, das luas, das marcas quádruplas e do espaço inferior. Por isso não há texto de “resposta correta” nem uma revelação automática ao descobrir todos os objetos.
+A página 04B pede explicitamente não fechar a interpretação do centro, das luas, das marcas quádruplas e do espaço inferior. Por isso não há texto de “resposta correta” nem uma revelação automática ao descobrir todos os objetos. Um recibo novo, costurado no tecido, diz apenas “custódia 06 — devolver sem abrir”. Ele deve levar os jogadores a suspeitar de uma ligação com o Número 6, sem provar o que foi guardado ou quem assinou.
 
-**Não afirmar** que o Alfaiate, os Observadores ou a Concordância criaram a máscara ou provocaram esta ocorrência. Os símbolos não provam essa ligação. A máscara continua com Rui; o selamento e as recompensas do cofre permanecem como no gabarito principal. O número seis de objetos é uma decisão de escopo, não um número ritual.
+**Limite canônico importante:** “04 — Segredos do Mestre” identifica a máscara pessoal de Levi como Presente da Emoção que pertenceu ao Número 4. “Debaixo da Festa” descreve a máscara original vestida por Rui, sem ligá-la ao Número 6. O recibo 06 é uma pista autoral e ambígua, não confirmação de que essas máscaras são a mesma peça nem de que o Número 6 foi seu dono. Mantê-la como teoria preserva o cânone atual; torná-la fato exigiria uma decisão de retcon. Também não afirmar que o Alfaiate ou a Concordância criaram a máscara ou provocaram esta ocorrência. A máscara continua com Rui; o selamento e as recompensas do cofre permanecem como no gabarito principal.
 
 O cofre é independente do passeio. Reiniciar a gravação não apaga o caderno. O jogador pode sair do modo exploração a qualquer momento, sem encontrar nada.
