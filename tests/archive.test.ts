@@ -8,6 +8,7 @@ import {
   SAVE_KEY,
 } from "../src/state/PuzzlePersistence";
 import { useGame } from "../src/state/store";
+import { useExplore } from "../src/state/exploration";
 const answer: FragmentId[] = [
   "registro",
   "chamado",
@@ -34,6 +35,7 @@ function* permutations<T>(xs: T[]): Generator<T[]> {
       yield [xs[i], ...tail];
 }
 beforeEach(() => {
+  useExplore.getState().leave();
   vi.stubGlobal("localStorage", {
     getItem: vi.fn(() => null),
     setItem: vi.fn(),

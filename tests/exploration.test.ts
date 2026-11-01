@@ -9,6 +9,7 @@ import {
 } from "../src/content/exploration";
 import { useExplore } from "../src/state/exploration";
 import { useGame } from "../src/state/store";
+import { showPuzzle, showExploration, interactWithRoom } from "../src/state/modes";
 beforeEach(() => {
   useExplore.getState().leave();
   useExplore.setState({ found: [], note: "" });
@@ -87,9 +88,31 @@ describe("passeio e caderno", () => {
     expect(useGame.getState().workbench).toBe(false);
     expect(useGame.getState().inspection).toBe(null);
     useExplore.setState({ near: "safe" });
-    useExplore.getState().interact();
+    interactWithRoom();
     expect(useExplore.getState().walking).toBe(false);
+    expect(useGame.getState().started).toBe(true);
     expect(useGame.getState().order).toEqual(order);
+  });
+  it("retorna do puzzle sem deixar reprodução ou diálogos presos no passeio", () => {
+    useExplore.getState().enter();
+    useExplore.getState().book();
+    showPuzzle();
+    expect(useExplore.getState().opened).toBe(null);
+    useGame.getState().move(0, 2);
+    const order = [...useGame.getState().order];
+    useGame.getState().select(2);
+    useGame.getState().setWorkbench(true);
+    useGame.getState().inspect("main");
+    useGame.getState().play();
+    showExploration();
+    expect(useExplore.getState().walking).toBe(true);
+    expect(useGame.getState().workbench).toBe(false);
+    expect(useGame.getState().inspection).toBe(null);
+    expect(useGame.getState().phase).toBe("idle");
+    showPuzzle();
+    expect(useGame.getState().order).toEqual(order);
+    useGame.getState().setWorkbench(true);
+    expect(useGame.getState().workbench).toBe(true);
   });
   it("continua a descoberta mesmo sem storage", () => {
     vi.stubGlobal("localStorage", {

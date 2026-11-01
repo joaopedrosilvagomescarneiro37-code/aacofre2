@@ -1,4 +1,5 @@
 import { useExplore } from "../state/exploration";
+import { showExploration } from "../state/modes";
 import { ExplorationUI } from "./ExplorationUI";
 import { useShallow } from "zustand/react/shallow";
 import { useEffect, useRef, useState } from "react";
@@ -318,7 +319,7 @@ export function GameUI() {
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
   }, [menu]);
-  if (g.started && walking)
+  if (walking)
     return (
       <>
         <ArchivePlayer />
@@ -343,12 +344,7 @@ export function GameUI() {
           {g.started && (
             <button
               className="explore-button"
-              onClick={() => {
-                g.stop();
-                g.inspect(null);
-                g.setWorkbench(false);
-                useExplore.getState().enter();
-              }}
+              onClick={showExploration}
             >
               Explorar a sala
             </button>

@@ -20,6 +20,7 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 800 } }),
 page.setDefaultTimeout(60000);
 page.on("pageerror", (e) => errors.push(e.message));
 async function bindCamera(p) {
+  await p.locator("canvas").waitFor();
   await p.evaluate(async () => {
     const source = await (await fetch("/src/scene/SafeScene.tsx")).text();
     const url = source.match(/from "([^"]*@react-three_fiber[^\"]*)"/)[1];
@@ -27,16 +28,13 @@ async function bindCamera(p) {
     window.readCamera = () => {
       const c = fiber._roots
         .get(document.querySelector("canvas"))
-        .store.getState().camera;
-      return { x: c.position.x, z: c.position.z, yaw: c.rotation.y };
+        ?.store.getState().camera;
+      return c ? { x: c.position.x, z: c.position.z, yaw: c.rotation.y } : null;
     };
   });
+  await p.waitForFunction(() => window.readCamera()?.z <= 7.1);
 }
 await page.goto("http://127.0.0.1:5173/");
-await page.getByRole("button", { name: /Iniciar inspeção/ }).click();
-await page
-  .getByRole("button", { name: "Explorar a sala", exact: true })
-  .click();
 await bindCamera(page);
 async function walk(key, axis, op, target) {
   await page.keyboard.down(key);
@@ -121,16 +119,12 @@ await book
 await page.screenshot({ path: "/tmp/explore-journal.png" });
 await page.keyboard.press("Escape");
 await page
-  .getByRole("button", { name: "Voltar ao cofre", exact: true })
+  .getByRole("button", { name: "Puzzle principal", exact: true })
   .click();
 await page.getByRole("button", { name: /Examinar as sete emendas/ }).click();
 assert.equal(await page.locator(".rail li").count(), 7);
 await page.keyboard.press("Escape");
 await page.reload();
-await page.getByRole("button", { name: /Iniciar inspeção/ }).click();
-await page
-  .getByRole("button", { name: "Explorar a sala", exact: true })
-  .click();
 await page.getByRole("button", { name: "Caderno (6)", exact: true }).click();
 assert.match(
   await page.getByRole("textbox", { name: "Suas teorias" }).inputValue(),
@@ -145,10 +139,6 @@ const mobile = await browser.newPage({
 mobile.setDefaultTimeout(60000);
 mobile.on("pageerror", (e) => errors.push(e.message));
 await mobile.goto("http://127.0.0.1:5173/");
-await mobile.getByRole("button", { name: /Iniciar inspeção/ }).click();
-await mobile
-  .getByRole("button", { name: "Explorar a sala", exact: true })
-  .click();
 await bindCamera(mobile);
 const forward = await mobile
   .getByRole("button", { name: "Andar para frente", exact: true })
@@ -179,7 +169,7 @@ await mobile
 await mobile.screenshot({ path: "/tmp/explore-mobile-journal.png" });
 await mobile.keyboard.press("Escape");
 await mobile
-  .getByRole("button", { name: "Voltar ao cofre", exact: true })
+  .getByRole("button", { name: "Puzzle principal", exact: true })
   .click();
 assert.equal(
   await mobile

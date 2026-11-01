@@ -4,6 +4,7 @@ import { SECRETS } from "../content/exploration";
 import { markData } from "../content/marks";
 import { useExplore, walkInput, clearWalkInput } from "../state/exploration";
 import { useGame } from "../state/store";
+import { showPuzzle, interactWithRoom } from "../state/modes";
 import { sound } from "../audio/SoundManager";
 function Hold({
   label,
@@ -55,7 +56,7 @@ export function ExplorationUI() {
   const secret = SECRETS.find((s) => s.id === opened);
   const known = !!secret && found.includes(secret.id),
     journal = opened === "journal";
-  const nearLabel = SECRETS.find((s) => s.id === near)?.title;
+  const nearLabel = near === "safe" ? "Examinar o cofre" : SECRETS.find((s) => s.id === near)?.title;
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -82,10 +83,7 @@ export function ExplorationUI() {
           <button
             className="mode-toggle"
             title="Abrir o puzzle principal em vista fixa"
-            onClick={() => {
-              useGame.getState().start();
-              useExplore.getState().leave();
-            }}
+            onClick={showPuzzle}
           >
             Puzzle principal
           </button>
@@ -110,7 +108,7 @@ export function ExplorationUI() {
           ref={interaction}
           disabled={!near}
           className={near ? "primary" : ""}
-          onClick={useExplore.getState().interact}
+          onClick={interactWithRoom}
         >
           {near
             ? `E · ${nearLabel}`

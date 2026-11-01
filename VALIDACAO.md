@@ -54,3 +54,14 @@ Etapa móvel executada separadamente em viewport 390 × 844 com emulação de to
 Fontes do Notion e distinção entre cânone e colocação autoral estão em `SEGREDOS_DO_DEPOSITO.md`. O caderno não valida teorias, não executa texto digitado e não transforma símbolos em senha.
 
 Script de verificação: `scripts/exploration-check.mjs`. Usa teclas reais para visitar os objetos e lê a câmera apenas para verificar posições, sem teletransportá-la. Inclui arraste para olhar, pausa de movimento em diálogos, caderno, retorno ao puzzle, recarga e toque móvel. Execução concluída em Chromium headless com SwiftShader: os seis segredos foram alcançados andando; arraste para olhar, pausa em diálogos, seis desenhos e duas comparações no caderno, persistência após recarga e retorno às sete emendas passaram sem erros de página. Em viewport móvel 390 × 844, movimento por toque, edição do caderno, retorno ao cofre e ausência de overflow horizontal passaram. Capturas desktop e móvel foram inspecionadas visualmente. Depois, foi separado o aviso do botão no caderno móvel e elevada a marca da bacia em 2 cm para evitar sobreposição com a água. Não houve medição em GPU real ou celular físico.
+
+
+## Correção — puzzle interativo e retorno ao passeio
+
+A entrada principal agora monta a interface que alterna os dois modos. Antes, só a interface do passeio permanecia montada, embora o botão alterasse o estado; a cena também desativava eventos de ponteiro ao sair da primeira pessoa. Ambos foram corrigidos. O botão do canto e a interação E perto do cofre usam a mesma transição. Voltar ao passeio fecha inspeções e interrompe a reprodução, preservando peças, descobertas e inventário.
+
+`npm test`: **28 testes passaram**, incluindo as transições entre modos. `npm run build`: TypeScript e Vite passaram.
+
+`scripts/browser-check.mjs` foi executado por completo em Chromium headless com SwiftShader. O percurso começa andando até o cofre e pressionando E, retorna ao passeio e reentra pelo botão do canto. Um clique real nas coordenadas projetadas da peça 3D abre a bancada. Depois, monta a solução por teclado, arraste e botões, verifica persistência ao alternar modos e recarregar, toca um MP3 real, confere a cópia em silêncio, abre a porta manualmente, lê e registra o relatório, consulta as outras recompensas e reinicia. Nenhum estado do jogo foi injetado para resolver o puzzle. Sem erros de página.
+
+Em viewport móvel 390 × 844 com toque emulado, volume, movimentação das faixas, verso e emenda, retorno ao passeio e reentrada no puzzle preservando a ordem passaram sem overflow horizontal. Capturas da vista 3D, bancada, relatório e telas móveis foram inspecionadas. O teste usa renderização por software e não mede desempenho em aparelho físico.

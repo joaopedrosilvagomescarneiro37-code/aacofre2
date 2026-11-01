@@ -3,6 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { nearby, stepPosition } from "../content/exploration";
 import { useExplore, walkInput, clearWalkInput } from "../state/exploration";
 import { useGame } from "../state/store";
+import { interactWithRoom } from "../state/modes";
 export function WalkingCamera() {
   const { camera, gl } = useThree();
   const pose = useRef({ x: 0, z: 7, yaw: 0, pitch: 0 }),
@@ -47,7 +48,7 @@ export function WalkingCamera() {
         e.preventDefault();
         keys.current.add(e.code);
       }
-      if (e.code === "KeyE" && !e.repeat) useExplore.getState().interact();
+      if (e.code === "KeyE" && !e.repeat) interactWithRoom();
     };
     const up = (e: KeyboardEvent) => keys.current.delete(e.code);
     const start = (e: PointerEvent) => {

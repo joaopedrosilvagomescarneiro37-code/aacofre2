@@ -19,14 +19,56 @@ const browser = await chromium.launch({
   ],
 });
 const errors = [];
+async function openPuzzle(page) {
+  await page.getByRole("button", { name: "Puzzle principal", exact: true }).click();
+  await page.getByRole("button", { name: "Explorar a sala", exact: true }).waitFor();
+  assert.equal(await page.locator(".walk-pad").count(), 0);
+}
+async function bindScene(page) {
+  await page.evaluate(async () => {
+    const source = await (await fetch("/src/scene/SafeScene.tsx")).text();
+    const url = source.match(/from "([^"]*@react-three_fiber[^"]*)"/)[1];
+    const fiber = await import(url);
+    const root = () => fiber._roots.get(document.querySelector("canvas"))?.store.getState();
+    window.cameraZ = () => root()?.camera.position.z ?? Infinity;
+    window.scenePoint = (name) => {
+      const { scene, camera } = root();
+      const object = scene.getObjectByName(name);
+      const point = object.getWorldPosition(object.position.clone()).project(camera);
+      const rect = document.querySelector("canvas").getBoundingClientRect();
+      return { x: rect.left + (point.x + 1) * rect.width / 2,
+        y: rect.top + (1 - point.y) * rect.height / 2 };
+    };
+  });
+}
+
 if (!process.env.MOBILE_ONLY) {
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+page.setDefaultTimeout(60000);
 page.on("pageerror", (e) => errors.push(e.message));
 await page.goto("http://127.0.0.1:5173/");
-await page.getByRole("button", { name: /Iniciar inspeção/ }).click();
+// The default view must actually walk. Approach the cofre and enter via E.
+await page.locator("canvas").waitFor();
+await bindScene(page);
+await page.waitForFunction(() => window.cameraZ() <= 7.1);
+await page.keyboard.down("w");
+try {
+  await page.getByRole("button", { name: "E · Examinar o cofre", exact: true }).waitFor();
+} finally {
+  await page.keyboard.up("w");
+}
+await page.keyboard.press("e");
+await page.getByRole("button", { name: "Explorar a sala", exact: true }).waitFor();
+assert.equal(await page.locator(".walk-pad").count(), 0);
+await page.getByRole("button", { name: "Explorar a sala", exact: true }).click();
+await openPuzzle(page);
+await bindScene(page);
+await page.waitForFunction(() => window.cameraZ() > 10.5);
 await page.screenshot({ path: "/tmp/archive-scene.png" });
 assert.equal(await page.locator(".webgl-error").count(), 0);
-await page.getByRole("button", { name: /Examinar as sete/ }).click();
+// Click the rendered 3D piece, without firing handlers or changing game state.
+const splice = await page.evaluate(() => window.scenePoint("splice-0"));
+await page.mouse.click(splice.x, splice.y);
 const bench = page.getByRole("dialog", { name: "Mesa de emendas" });
 await bench.getByRole("button", { name: /Virar para o verso/ }).click();
 await bench
@@ -85,8 +127,17 @@ for (let target = 0; target < order.length; target++) {
     current--;
   }
 }
+await page.getByRole("button", { name: "Fechar Mesa de emendas", exact: true }).click();
+await page.getByRole("button", { name: "Explorar a sala", exact: true }).click();
+await page.getByRole("button", { name: "Caderno (0)", exact: true }).click();
+await page.getByRole("textbox", { name: "Suas teorias" }).fill("O passeio e o puzzle preservam minhas descobertas.");
+await page.keyboard.press("Escape");
+await openPuzzle(page);
+await page.getByRole("button", { name: /Examinar as sete/ }).click();
+assert.deepEqual(await bench.locator(".rail strong").allTextContents(), order);
+console.log("both mode entries, real 3D click and return with assembly passed");
 await page.reload();
-await page.getByRole("button", { name: /Iniciar inspeção/ }).click();
+await openPuzzle(page);
 await page.getByRole("button", { name: /Examinar as sete/ }).click();
 assert.deepEqual(await bench.locator(".rail strong").allTextContents(), order);
 await bench
@@ -145,7 +196,7 @@ await page
   .getByRole("button", { name: "Fechar inspeção", exact: true })
   .click();
 await page.reload();
-await page.getByRole("button", { name: /Iniciar inspeção/ }).click();
+await openPuzzle(page);
 assert.match(
   await page.locator(".reward-tray").innerText(),
   /Relatório de interdição.*✓/s,
@@ -176,7 +227,7 @@ const mobile = await browser.newPage({
 mobile.on("pageerror", e => errors.push(e.message));
 mobile.setDefaultTimeout(60000);
 await mobile.goto("http://127.0.0.1:5173/");
-await mobile.getByRole("button", { name: /Iniciar inspeção/ }).click();
+await openPuzzle(mobile);
 await mobile
   .getByRole("button", { name: "Ajustar volume", exact: true })
   .click();
@@ -198,6 +249,14 @@ await md
   .getByRole("button", { name: "Levantar a emenda", exact: true })
   .click();
 await mobile.screenshot({ path: "/tmp/archive-mobile-inspection.png" });
+const mobileOrder = await md.locator(".rail strong").allTextContents();
+await mobile.getByRole("button", { name: "Fechar Mesa de emendas", exact: true }).click();
+await mobile.getByRole("button", { name: "Explorar a sala", exact: true }).click();
+assert.equal(await mobile.locator(".walk-pad").count(), 1);
+await openPuzzle(mobile);
+await mobile.getByRole("button", { name: /Examinar as sete/ }).click();
+assert.deepEqual(await md.locator(".rail strong").allTextContents(), mobileOrder);
+
 assert.deepEqual(errors, []);
 fs.writeFileSync(
   "/tmp/archive-browser-result.json",
@@ -208,6 +267,11 @@ fs.writeFileSync(
       errors,
       checks: process.env.MOBILE_ONLY ? ["mobile volume", "mobile controls", "no horizontal overflow", "back and splice inspection"] : [
         "WebGL render",
+        "walk to cofre and enter via E",
+        "corner button and return to walking",
+        "rendered 3D splice click",
+        "assembly preserved between modes",
+        "mobile mode round trip",
         "wrong assembly",
         "pause",
         "keyboard reorder",

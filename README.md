@@ -23,7 +23,7 @@ Não abra o HTML diretamente pelo gerenciador de arquivos.
 
 ## Jogar
 
-1. Inicie a inspeção e examine as sete emendas pelo aparelho ou pelo botão.
+1. Use **Puzzle principal** para entrar na vista do cofre e examine as sete emendas pelo aparelho ou pelo botão.
 2. Selecione uma faixa para ler a fala, o verso da cantiga e os vestígios. Vire o suporte e levante a ponta de adesivo quando quiser investigar a anotação.
 3. Reorganize arrastando ou com **Mover antes/depois**. As palavras não mudam de posição secretamente.
 4. **Ouvir só esta** e **Ouvir montagem** são prévias. **Conferir cópia** testa o ferrolho ao terminar a leitura. Pausa, parar e próxima faixa estão disponíveis; avançar é permitido também em silêncio.
@@ -35,7 +35,7 @@ O progresso é local: montagem, descobertas sob emendas, dicas, volume, mudo, ab
 
 ## Exploração e segredos
 
-O site abre diretamente no passeio. WASD anda, arrastar olha, ↑/↓ andam e ←/→ giram. **E** ou o botão central examina objetos próximos e à frente. No celular, mantenha os botões de movimento pressionados e arraste a cena para olhar. Não exige captura do mouse. **Esc** fecha uma observação.
+O site abre diretamente no passeio. O botão **Puzzle principal**, no canto superior, entra na vista de inspeção do cofre; **Explorar a sala** retorna ao passeio sem perder a montagem. Também é possível aproximar-se do cofre e usar **E · Examinar o cofre**. WASD anda, arrastar olha, ↑/↓ andam e ←/→ giram. **E** ou o botão central examina objetos próximos e à frente. No celular, mantenha os botões de movimento pressionados e arraste a cena para olhar. Não exige captura do mouse. **Esc** fecha uma observação.
 
 O depósito contém cinco vestígios inspirados no Notion da campanha e um easter egg. **Caderno** reúne apenas os desenhos já revelados, oferece comparações observáveis e um espaço de até 2.000 caracteres para suas teorias. As anotações são salvas neste navegador. A posição não é salva; cada visita começa no centro da sala.
 
@@ -45,7 +45,7 @@ Fontes, limites de cânone e localizações dos segredos estão em `SEGREDOS_DO_
 
 ## Vercel
 
-O projeto já contém `vercel.json`. Importe este repositório com preset **Vite**, instalação `npm ci`, build `npm run build`, saída `dist`. Não exige banco, variáveis de ambiente ou API de voz durante a partida. Para revisar a alteração, selecione a branch `codex/arquivo-agua-morta` e use um ambiente Preview; esta entrega não faz merge nem deploy.
+O projeto já contém `vercel.json`. Importe este repositório com preset **Vite**, instalação `npm ci`, build `npm run build`, saída `dist`. Não exige banco, variáveis de ambiente ou API de voz durante a partida. A branch `main` publica no domínio principal. Para revisar uma alteração antes da publicação, use o ambiente Preview da branch `codex/arquivo-agua-morta`.
 
 Os MP3 e fontes estão no próprio projeto. O MP3 original de edição fica em `assets/`, fora do diretório público. Não é necessário regenerar áudio para construir o site.
 

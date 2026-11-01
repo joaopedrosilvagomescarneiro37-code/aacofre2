@@ -2,6 +2,7 @@ import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import ReactThreeTestRenderer, { act } from "@react-three/test-renderer";
 import { useGame } from "../src/state/store";
+import { useExplore } from "../src/state/exploration";
 import type { FragmentId } from "../src/content/archive";
 vi.mock("../src/scene/materials", async () => {
   const T = await import("three");
@@ -23,7 +24,10 @@ vi.stubGlobal("self", {
   requestAnimationFrame: () => 0,
   cancelAnimationFrame: () => {},
 });
-beforeEach(() => useGame.getState().reset());
+beforeEach(() => {
+  useExplore.getState().leave();
+  useGame.getState().reset();
+});
 describe("grafo 3D e manipuladores reais (sem renderização GPU)", () => {
   it("monta sete faixas, seleciona por clique e oculta recompensas", async () => {
     const r = await ReactThreeTestRenderer.create(<ArchiveSafe />);
